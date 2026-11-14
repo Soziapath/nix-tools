@@ -1,3 +1,12 @@
+local function configuredHost()
+  local path = noctalia.getConfig("host_file")
+  if path and path ~= "" then
+    local value = noctalia.readFile(noctalia.expandPath(path))
+    return value and string.match(value, "^%s*(%S+)%s*$") or ""
+  end
+  return noctalia.getConfig("host")
+end
+
 local connection = nil
 local current = {status="connecting", message="Connecting to Proxmox…", attempt=0}
 local secret = ""
@@ -61,7 +70,7 @@ render = function()
       ui.glyph({name=current.status == "success" and "circle-check" or "lock", size=30, color="primary"}),
       ui.column({gap=4}, {
         ui.label({text="Unlock Proxmox", fontSize=21, fontWeight="bold"}),
-        ui.label({text=noctalia.getConfig("host") .. ":" .. tostring(noctalia.getConfig("port")), color="on_surface_variant"}),
+        ui.label({text=configuredHost() .. ":" .. tostring(noctalia.getConfig("port")), color="on_surface_variant"}),
       }),
     }),
     ui.separator({}),
@@ -87,8 +96,8 @@ function onOpen()
   connection=nil
   current={status="connecting",message="Connecting to Proxmox…",attempt=0}
   secret=""
-  if noctalia.getConfig("host") == "" or not loopbackIsDirect() then
-    current={status="error", attempt=0, message=noctalia.getConfig("host") == ""
+  if configuredHost() == "" or not loopbackIsDirect() then
+    current={status="error", attempt=0, message=configuredHost() == ""
       and "Set the SSH host in the plugin settings."
       or "Add 127.0.0.1 to Noctalia’s no_proxy environment and restart Noctalia."}
     render()
@@ -97,7 +106,7 @@ function onOpen()
   local function quote(value) return "'" .. string.gsub(value,"'","'\\''") .. "'" end
   local argv={noctalia.getConfig("command"),"--gui","--port",tostring(noctalia.getConfig("port")),
     "--identity",noctalia.expandPath(noctalia.getConfig("identity")),"--user",noctalia.getConfig("user"),
-    "--timeout",tostring(noctalia.getConfig("timeout")),"--",noctalia.getConfig("host")}
+    "--timeout",tostring(noctalia.getConfig("timeout")),"--",configuredHost()}
   for i,value in ipairs(argv) do argv[i]=quote(value) end
   local started=noctalia.runStream(table.concat(argv," "),function(line)
     local data=noctalia.json.decode(line)

@@ -99,7 +99,8 @@ class UI:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="luks-unlock", description=__doc__)
-    parser.add_argument("host", help="initramfs SSH hostname or address")
+    parser.add_argument("host", nargs="?", help="initramfs SSH hostname or address")
+    parser.add_argument("--host-file", type=Path, help="read the default SSH host from a file")
     parser.add_argument("-p", "--port", type=int, default=2222)
     parser.add_argument("-i", "--identity", type=lambda p: Path(p).expanduser(),
                         default=Path("~/.ssh/luks-unlock").expanduser())
@@ -113,9 +114,16 @@ def main(argv=None):
     mode.add_argument("--gui", action="store_true", help="start the private Noctalia panel bridge")
     parser.add_argument("--json", action="store_true", help="emit JSON with --check")
     args = parser.parse_args(argv)
+    if args.host is None:
+        if args.host_file is None:
+            parser.error("provide a host or --host-file")
+        try:
+            args.host = args.host_file.expanduser().read_text().strip()
+        except (OSError, UnicodeError):
+            parser.error("could not read the SSH host file")
     if not 1 <= args.port <= 65535:
         parser.error("port must be between 1 and 65535")
-    if not args.host or args.host.startswith("-") or args.user.startswith("-") or "@" in args.user:
+    if not args.host or any(c.isspace() for c in args.host) or args.host.startswith("-") or args.user.startswith("-") or "@" in args.user:
         parser.error("invalid host or user")
     if args.json and not (args.check or args.check_unlock):
         parser.error("--json requires a check mode")

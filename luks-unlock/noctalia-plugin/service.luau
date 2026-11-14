@@ -1,3 +1,12 @@
+local function configuredHost()
+  local path = noctalia.getConfig("host_file")
+  if path and path ~= "" then
+    local value = noctalia.readFile(noctalia.expandPath(path))
+    return value and string.match(value, "^%s*(%S+)%s*$") or ""
+  end
+  return noctalia.getConfig("host")
+end
+
 -- One watcher per plugin, shared by every bar and output.
 local state = { status = "checking", checked = "Never", available = false }
 local probing = false
@@ -6,7 +15,7 @@ local unavailableChecks = 0
 local generation = 0
 
 local function publish()
-  state.host = noctalia.getConfig("host")
+  state.host = configuredHost()
   state.port = noctalia.getConfig("port")
   noctalia.state.set("endpoint", state)
 end
@@ -18,13 +27,13 @@ local function command(mode)
     "--user", noctalia.getConfig("user"),
     "--identity", noctalia.expandPath(noctalia.getConfig("identity")),
     "--timeout", tostring(noctalia.getConfig("timeout")),
-    "--", noctalia.getConfig("host"),
+    "--", configuredHost(),
   }
 end
 
 local function probe()
   if probing then return end
-  if noctalia.getConfig("host") == "" then
+  if configuredHost() == "" then
     state.status = "unavailable"
     state.error = "Set the SSH host in the plugin settings"
     publish()
@@ -50,7 +59,7 @@ local function probe()
       state.status = value.unlocking and "unlocking" or (value.available and "available" or "unavailable")
       state.error = nil
       if value.available and not value.unlocking and not lastAvailable and noctalia.getConfig("notify") then
-        noctalia.notify("Proxmox unlock available", noctalia.getConfig("host") .. ":" .. tostring(noctalia.getConfig("port")) .. " — click the lock in the bar to unlock")
+        noctalia.notify("Proxmox unlock available", configuredHost() .. ":" .. tostring(noctalia.getConfig("port")) .. " — click the lock in the bar to unlock")
       end
       if value.available then
         lastAvailable = not value.unlocking or lastAvailable
@@ -86,7 +95,7 @@ end
 function onConfigChanged()
   generation += 1
   probing = false
-  if state.host ~= noctalia.getConfig("host") or state.port ~= noctalia.getConfig("port") then
+  if state.host ~= configuredHost() or state.port ~= noctalia.getConfig("port") then
     lastAvailable = false
     unavailableChecks = 0
   end

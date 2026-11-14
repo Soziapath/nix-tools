@@ -1,6 +1,7 @@
 {
   "settings.command": "Unlock helper executable",
   "settings.host": "Server address",
+  "settings.host_file": "SSH host file",
   "settings.port": "Initramfs SSH port",
   "settings.user": "SSH user",
   "settings.identity": "SSH private key",

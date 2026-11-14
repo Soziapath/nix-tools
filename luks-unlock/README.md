@@ -11,7 +11,8 @@ nix run 'github:Soziapath/nix-tools?dir=luks-unlock#tui' -- proxmox.example.test
 ```
 
 From a local checkout, use `nix run path:.#tui -- proxmox.example.test`.
-The host is required. Port, identity and user default to `2222`,
+Provide a host or use `--host-file` to read it from a local file. The plugin
+accepts the same file via its `host_file` setting. Port, identity and user default to `2222`,
 `~/.ssh/luks-unlock` and `root`. The TUI waits for an SSH banner, then hands
 the terminal to OpenSSH for verification and passphrase entry. Ctrl+C cancels.
 `--check --json` probes once without a terminal or key. Exit 0 indicates an
