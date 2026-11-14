@@ -1,0 +1,93 @@
+id = "soziapath/luks-unlock"
+name = "LUKS Unlock"
+version = "1.2.1"
+plugin_api = 24
+author = "soziapath"
+icon = "lock"
+description = "Watch a Proxmox initramfs SSH endpoint and unlock it in a native password panel."
+tags = ["bar", "service", "system"]
+
+[[setting]]
+key = "command"
+type = "string"
+label_key = "settings.command"
+default = "@LUKS_UNLOCK@"
+advanced = true
+
+[[setting]]
+key = "host"
+type = "string"
+label_key = "settings.host"
+default = ""
+
+[[setting]]
+key = "port"
+type = "int"
+label_key = "settings.port"
+default = 2222
+min = 1
+max = 65535
+
+[[setting]]
+key = "user"
+type = "string"
+label_key = "settings.user"
+default = "root"
+
+[[setting]]
+key = "identity"
+type = "file"
+label_key = "settings.identity"
+default = "~/.ssh/luks-unlock"
+
+[[setting]]
+key = "interval"
+type = "int"
+label_key = "settings.interval"
+default = 5
+min = 2
+max = 300
+
+[[setting]]
+key = "timeout"
+type = "int"
+label_key = "settings.timeout"
+default = 2
+min = 1
+max = 10
+
+[[setting]]
+key = "notify"
+type = "bool"
+label_key = "settings.notify"
+default = true
+
+[[service]]
+id = "watcher"
+entry = "service.luau"
+
+[[widget]]
+id = "bar"
+entry = "bar.luau"
+
+[[widget.setting]]
+key = "hide_when_unavailable"
+type = "bool"
+label_key = "settings.hide"
+default = false
+
+[[widget.setting]]
+key = "show_label"
+type = "bool"
+label_key = "settings.label"
+default = true
+
+[[panel]]
+id = "unlock"
+entry = "panel.luau"
+width = 470
+height = 340
+placement = "floating"
+position = "center"
+keyboard_focus = "exclusive"
+dismiss_on_outside_click = false

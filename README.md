@@ -52,3 +52,11 @@ build against your own Nixpkgs. If you use the overlay, allow
 2. Register it with `callPackage` in `overlay.nix`, then export it in `flake.nix`.
 3. Set `meta.mainProgram` to expose its executable through `nix run`.
 4. Run `nix flake check` before committing.
+
+## LUKS Unlock
+
+The [LUKS Unlock subflake](luks-unlock/) packages a terminal UI and a Noctalia v5 plugin.
+
+```sh
+nix run 'github:Soziapath/nix-tools?dir=luks-unlock#tui' -- proxmox.example.test
+```

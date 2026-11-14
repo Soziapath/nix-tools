@@ -1,0 +1,12 @@
+{
+  "settings.command": "Unlock helper executable",
+  "settings.host": "Server address",
+  "settings.port": "Initramfs SSH port",
+  "settings.user": "SSH user",
+  "settings.identity": "SSH private key",
+  "settings.interval": "Check interval (seconds)",
+  "settings.timeout": "Connection timeout (seconds)",
+  "settings.notify": "Notify when unlocking becomes available",
+  "settings.hide": "Hide when the unlock endpoint is unavailable",
+  "settings.label": "Show status text"
+}
