@@ -60,3 +60,9 @@ The [LUKS Unlock subflake](luks-unlock/) packages a terminal UI and a Noctalia v
 ```sh
 nix run 'github:Soziapath/nix-tools?dir=luks-unlock#tui' -- proxmox.example.test
 ```
+
+## Pulsar
+
+The [Pulsar subflake](pulsar/) packages the native Linux launchers for Space
+Engineers 1 and 2 and exports a NixOS module. See its README for Steam launch
+options.
